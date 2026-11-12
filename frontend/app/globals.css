@@ -1,0 +1,78 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+@theme inline {
+  --color-primary: var(--md-sys-color-primary);
+  --color-on-primary: var(--md-sys-color-on-primary);
+  --color-primary-container: var(--md-sys-color-primary-container);
+  --color-on-primary-container: var(--md-sys-color-on-primary-container);
+  --color-primary-fixed: var(--md-sys-color-primary-fixed);
+  --color-on-primary-fixed: var(--md-sys-color-on-primary-fixed);
+  --color-secondary: var(--md-sys-color-secondary);
+  --color-on-secondary: var(--md-sys-color-on-secondary);
+  --color-secondary-fixed: var(--md-sys-color-secondary-fixed);
+  --color-on-secondary-fixed: var(--md-sys-color-on-secondary-fixed);
+  --color-tertiary: var(--md-sys-color-tertiary);
+  --color-on-tertiary: var(--md-sys-color-on-tertiary);
+  --color-tertiary-fixed: var(--md-sys-color-tertiary-fixed);
+  --color-on-tertiary-fixed: var(--md-sys-color-on-tertiary-fixed);
+  --color-surface: var(--md-sys-color-surface);
+  --color-surface-lowest: var(--md-sys-color-surface-container-lowest);
+  --color-surface-low: var(--md-sys-color-surface-container-low);
+  --color-surface-container: var(--md-sys-color-surface-container);
+  --color-surface-high: var(--md-sys-color-surface-container-high);
+  --color-surface-highest: var(--md-sys-color-surface-container-highest);
+  --color-on-surface: var(--md-sys-color-on-surface);
+  --color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --color-outline: var(--md-sys-color-outline);
+  --color-outline-variant: var(--md-sys-color-outline-variant);
+  --color-error: var(--md-sys-color-error);
+  --color-on-error: var(--md-sys-color-on-error);
+  --color-error-container: var(--md-sys-color-error-container);
+  --color-on-error-container: var(--md-sys-color-on-error-container);
+  --color-gold: var(--md-sys-color-gold);
+  /* system-ui is Roboto on Android: no font download on a costly data plan */
+  --font-sans: system-ui, Roboto, "Segoe UI", sans-serif;
+}
+
+body {
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+
+/* In the components layer so a rounded-* utility can still override the default radius. */
+@layer components {
+/* Expressive press: pill corners spring toward a squarer shape. Radius is half the min height,
+   not 9999px, so the morph interpolates over a visible range. */
+.press {
+  border-radius: 28px;
+  transition:
+    border-radius var(--spring-fast-spatial-ms) var(--spring-fast-spatial),
+    transform var(--spring-fast-spatial-ms) var(--spring-fast-spatial),
+    background-color var(--spring-default-effects-ms) var(--spring-default-effects);
+}
+.press:active:not(:disabled) {
+  border-radius: 12px;
+  transform: scale(0.97);
+}
+
+/* Code digits pop in one by one */
+@keyframes pop {
+  from { transform: scale(0.4); opacity: 0; }
+}
+.pop {
+  animation: pop var(--spring-fast-spatial-ms) var(--spring-fast-spatial) backwards;
+}
+}
+
+:focus-visible {
+  outline: 3px solid var(--md-sys-color-tertiary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
