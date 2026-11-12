@@ -18,7 +18,7 @@ function Stars({ r, who }: { r: Rating; who: string }) {
   const { t } = useApp();
   return (
     <div className="flex items-start gap-3">
-      {r.thumb === "up" ? <ThumbsUp className="text-secondary" aria-label={t("thumbsUp")} /> : <ThumbsDown className="text-error" aria-label={t("thumbsDown")} />}
+      {r.thumb === "up" ? <ThumbsUp className="text-primary" aria-label={t("thumbsUp")} /> : <ThumbsDown className="text-error" aria-label={t("thumbsDown")} />}
       <div>
         <p className="font-semibold">{who}</p>
         {!!r.tags.length && <p className="text-sm">{r.tags.map((tag) => t(`tag_${tag}` as Key)).join(" · ")}</p>}
@@ -35,10 +35,10 @@ function RateForm({ job, onSubmit }: { job: Job; onSubmit: (thumb: string, tags:
   const pick = (v: string) => { navigator.vibrate?.(30); setThumb(v); if (v === "down") setTags([]); };
   return (
     <Card className="space-y-4">
-      <h2 className="text-xl font-bold">{t("rateTitle", { name: other })}</h2>
+      <h2 className="text-base font-semibold">{t("rateTitle", { name: other })}</h2>
       <div className="grid grid-cols-2 gap-3">
-        <Choice selected={thumb === "up"} onClick={() => pick("up")} className="min-h-24 justify-center" aria-label={t("thumbsUp")}><ThumbsUp size={40} aria-hidden /></Choice>
-        <Choice selected={thumb === "down"} onClick={() => pick("down")} className="min-h-24 justify-center" aria-label={t("thumbsDown")}><ThumbsDown size={40} aria-hidden /></Choice>
+        <Choice selected={thumb === "up"} onClick={() => pick("up")} className="min-h-20 justify-center rounded-2xl" aria-label={t("thumbsUp")}><ThumbsUp size={32} aria-hidden /></Choice>
+        <Choice selected={thumb === "down"} onClick={() => pick("down")} className="min-h-20 justify-center rounded-2xl" aria-label={t("thumbsDown")}><ThumbsDown size={32} aria-hidden /></Choice>
       </div>
       {thumb === "up" && (
         <div className="flex flex-wrap gap-2">
@@ -50,7 +50,7 @@ function RateForm({ job, onSubmit }: { job: Job; onSubmit: (thumb: string, tags:
         </div>
       )}
       <p className="text-sm text-on-surface-variant">{t("blindNote")}</p>
-      <Button className="w-full" disabled={!thumb} onClick={() => onSubmit(thumb, tags)}>{t("sendRating")}</Button>
+      <Button size="lg" className="w-full" disabled={!thumb} onClick={() => onSubmit(thumb, tags)}>{t("sendRating")}</Button>
     </Card>
   );
 }
@@ -79,10 +79,10 @@ function JobView() {
         {mine ? job.artisan_name : job.customer_name}
       </Title>
 
-      <ol className="flex gap-1.5">
+      <ol className="flex gap-1">
         {STEPS.map((s, i) => (
           <li key={s} aria-current={i === stepIndex ? "step" : undefined}
-            className={`flex-1 rounded-full px-2 py-1.5 text-center text-xs font-bold ${i <= stepIndex ? "bg-primary text-on-primary" : "bg-surface-highest text-on-surface-variant"}`}>
+            className={`flex-1 border-t-4 pt-1.5 text-xs font-semibold ${i <= stepIndex ? "border-primary text-on-surface" : "border-surface-highest text-on-surface-variant"}`}>
             {t(`status_${s}`)}
           </li>
         ))}
@@ -91,12 +91,12 @@ function JobView() {
       {job.status === "locked" && <Notice><Lock size={16} className="mr-1 inline" aria-hidden />{t("jobLocked")}</Notice>}
 
       {job.status === "booked" && mine && (
-        <Card className="space-y-3 bg-tertiary-fixed! text-center text-on-tertiary-fixed">
+        <Card className="space-y-3 border-transparent! bg-primary-container! text-center text-on-primary-container">
           <p className="font-semibold">{t("yourCode")}</p>
           <p className="flex justify-center gap-2" aria-label={job.code!.split("").join(" ")}>
             {job.code!.split("").map((d, i) => (
               <span key={i} aria-hidden style={{ animationDelay: `${i * 90}ms` }}
-                className="pop grid h-20 w-16 place-items-center rounded-2xl bg-surface-lowest text-5xl font-extrabold text-tertiary">{d}</span>
+                className="pop grid h-20 w-16 place-items-center rounded-xl bg-surface-lowest text-5xl font-bold text-primary">{d}</span>
             ))}
           </p>
           <p className="font-medium">{t("codeRule", { name: job.artisan_name })}</p>
@@ -107,22 +107,22 @@ function JobView() {
       {job.status === "booked" && !mine && (
         <Card>
           <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); act("start", { code }); setCode(""); }}>
-            <h2 className="text-xl font-bold">{t("enterCode", { name: job.customer_name })}</h2>
+            <h2 className="text-base font-semibold">{t("enterCode", { name: job.customer_name })}</h2>
             <input inputMode="numeric" pattern="\d{4}" maxLength={4} required value={code} aria-label={t("jobCode")}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-              className="block h-20 w-full rounded-2xl border-2 border-outline-variant bg-surface-lowest text-center text-5xl font-extrabold tracking-[0.5em]" />
+              className="block h-20 w-full rounded-xl border border-outline bg-surface-lowest text-center text-5xl font-bold tracking-[0.5em] focus:outline-2 focus:outline-primary" />
             {job.attempts_left < 5 && <p className="text-sm font-semibold text-error">{t("triesLeft", { n: job.attempts_left })}</p>}
-            <Button type="submit" className="w-full" disabled={code.length !== 4}>{t("confirmArrival")}</Button>
+            <Button type="submit" size="lg" className="w-full" disabled={code.length !== 4}>{t("confirmArrival")}</Button>
           </form>
         </Card>
       )}
 
       {job.status === "in_progress" && (
         <Card className="space-y-3">
-          <p className="flex items-center gap-2 text-lg font-bold text-tertiary"><ShieldCheck aria-hidden /> {t("codeConfirmed")}</p>
+          <p className="flex items-center gap-2 text-lg font-bold text-primary"><ShieldCheck aria-hidden /> {t("codeConfirmed")}</p>
           <p className="text-sm text-on-surface-variant">{t("fairPrice")}: <strong className="text-on-surface">{money(job.band)}</strong></p>
           {mine
-            ? <Button className="w-full" onClick={() => act("complete")}><Check size={20} aria-hidden /> {t("workDone")}</Button>
+            ? <Button size="lg" className="w-full" onClick={() => act("complete")}><Check size={20} aria-hidden /> {t("workDone")}</Button>
             : <p>{t("waitCustomer", { name: job.customer_name })}</p>}
         </Card>
       )}
@@ -131,7 +131,7 @@ function JobView() {
 
       {job.status === "completed" && myRating && (
         <Card className="space-y-4">
-          <p className="flex items-center gap-2 text-sm font-semibold text-tertiary"><ShieldCheck size={18} aria-hidden /> {t("verifiedJob")}</p>
+          <p className="flex items-center gap-2 text-sm font-semibold text-primary"><ShieldCheck size={18} aria-hidden /> {t("verifiedJob")}</p>
           <Stars r={myRating} who={t("yourRating")} />
           {theirRating
             ? <Stars r={theirRating} who={t("theirRating", { name: mine ? job.artisan_name : job.customer_name })} />

@@ -24,8 +24,8 @@ function Ussd({ phone }: { phone: string }) {
   };
 
   return (
-    <div className="mx-auto w-64 rounded-[36px] bg-on-surface p-4 text-surface">
-      <pre aria-live="polite" className="min-h-48 whitespace-pre-wrap rounded-2xl bg-secondary-fixed p-3 font-mono text-sm text-on-secondary-fixed">
+    <div className="mx-auto w-64 rounded-[28px] bg-on-surface p-3 text-surface">
+      <pre aria-live="polite" className="min-h-48 whitespace-pre-wrap rounded-xl bg-surface-container p-3 font-mono text-sm text-on-surface">
         {screen ? screen.slice(4) : t("ussdIdle")}
       </pre>
       <form className="mt-3 space-y-2" onSubmit={(e) => { e.preventDefault(); send(path === null ? [] : [...path, input]); }}>
@@ -51,15 +51,15 @@ function Sim() {
       <Card><Field label={t("simPhone")} type="tel" value={phone} onChange={(e) => setTyped(e.target.value)} /></Card>
       <div className="grid gap-4 sm:grid-cols-2">
         <Card>
-          <h2 className="mb-3 text-xl font-bold">USSD *237#</h2>
+          <h2 className="mb-3 text-base font-semibold">USSD *237#</h2>
           <Ussd key={phone} phone={phone} />
         </Card>
         <Card>
-          <h2 className="mb-3 text-xl font-bold">{t("smsInbox")}</h2>
+          <h2 className="mb-3 text-base font-semibold">{t("smsInbox")}</h2>
           {!inbox?.length && <p className="text-on-surface-variant">{t("noSms")}</p>}
           <ul className="space-y-2">
             {inbox?.map((m, i) => (
-              <li key={m.ts + "-" + i} className="rounded-[20px_20px_20px_4px] bg-surface-highest p-3 text-sm">
+              <li key={m.ts + "-" + i} className="rounded-[16px_16px_16px_4px] bg-surface-container p-3 text-sm">
                 {m.text}
                 <span className="mt-1 block text-xs text-on-surface-variant">{new Date(m.ts * 1000).toLocaleTimeString(lang)}</span>
               </li>

@@ -21,7 +21,9 @@ def _pick(options: list, choice: str):
 
 
 def _line(v: dict) -> str:
-    score = f"{v['pct']}% satisfied" if v["pct"] is not None else "not rated yet"
+    rated = v["up"] + v["down"]
+    score = (f"{v['pct']}% satisfied" if v["pct"] is not None
+             else f"{v['up']} of {rated} satisfied" if rated else "not rated yet")
     return f"{v['name']} ID {v['id']}: {TIERS[v['tier']]}, {v['verified_jobs']} jobs checked, {score}"
 
 

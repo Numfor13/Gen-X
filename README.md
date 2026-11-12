@@ -35,11 +35,11 @@ Booking always goes to whoever you pick. To play both sides with the built-in lo
 | Level | Shape | Needs |
 |---|---|---|
 | New | outline circle | Phone registered. Cannot be booked. |
-| Vouched | green circle | 2 vouches from 2 different circles (trade and community). |
-| Verified | indigo 6-point cookie | Vouched, plus 3 code-confirmed jobs. |
-| Trusted Pro | ochre 8-point burst | Verified, plus 10 confirmed jobs and at least 80% satisfied. |
+| Vouched | pale green circle | 2 vouches from 2 different circles (trade and community). |
+| Verified | green 6-point cookie | Vouched, plus 3 code-confirmed jobs. |
+| Trusted Pro | green 8-point burst with a gold star | Verified, plus 10 confirmed jobs and at least 80% satisfied. |
 
-- "% satisfied" is the lower bound of a Wilson interval, so a thin record cannot look perfect.
+- "% satisfied" is the lower bound of a Wilson interval, so a thin record cannot look perfect. It is shown only from 5 ratings; before that the profile says "1 of 1 satisfied".
 - Matching scores distance, satisfaction and level, and keeps one of three slots for a vouched newcomer.
 - Fraud rules: self-vouch, vouch rings, a budget of 5 vouches per person, self-booking, and code guessing.
 
@@ -48,7 +48,7 @@ The rules live in `backend/app/domain.py` and `backend/app/service.py`.
 ## Layout
 
 - `backend/` FastAPI. One DynamoDB table (`PK`/`SK`, `GSI1`, `GSI2`), run locally on moto's in-memory emulator so the same code can deploy to AWS later.
-- `frontend/` Next.js 16 static export, Tailwind v4, Material 3 Expressive tokens generated from three seed colours (`npm run tokens`).
+- `frontend/` Next.js 16 static export, Tailwind v4, Material 3 Expressive tokens generated from a forest-green seed with an ochre accent (`npm run tokens`). Expressive shapes are reserved for the trust badge and the job-code screen; everything else is plain lists and cards.
 - `reports/`, `research_notes/` the research this is built from.
 
 ## Checks

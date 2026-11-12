@@ -1,13 +1,13 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, CalendarDays, Clock, Flame, MapPin } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, MapPin, Zap } from "lucide-react";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app";
 import { Gate, Title } from "@/components/Shell";
-import { Button, Choice, Loading, Notice, TradeIcon } from "@/components/ui";
+import { Button, Choice, List, Loading, Notice, RowButton, TradeIcon } from "@/components/ui";
 
-const URGENCY = [["now", Flame], ["today", Clock], ["week", CalendarDays]] as const;
+const URGENCY = [["now", Zap], ["today", Clock], ["week", CalendarDays]] as const;
 
 function Flow() {
   const { t, ref, label, trade: tradeOf, user } = useApp();
@@ -32,32 +32,29 @@ function Flow() {
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="-ml-2 flex items-center gap-2">
         <Button variant="text" onClick={back} aria-label={t("back")} className="px-3!"><ArrowLeft size={20} aria-hidden /></Button>
-        <div className="flex flex-1 gap-1.5" role="progressbar" aria-valuemin={1} aria-valuemax={4} aria-valuenow={step + 1}>
-          {[0, 1, 2, 3].map((i) => <span key={i} className={`h-2 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-surface-highest"}`} />)}
+        <div className="flex flex-1 gap-1" role="progressbar" aria-valuemin={1} aria-valuemax={4} aria-valuenow={step + 1}>
+          {[0, 1, 2, 3].map((i) => <span key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-surface-highest"}`} />)}
         </div>
+        <span className="text-sm tabular-nums text-on-surface-variant">{step + 1}/4</span>
       </div>
 
       {step === 0 && (
         <>
           <Title>{t("pickTrade")}</Title>
-          <div className="grid gap-2">
-            {ref.trades.map((x) => <Choice key={x.id} className="min-h-16 text-lg" onClick={() => setTrade(x.id)}><TradeIcon trade={x.id} /> {label(x)}</Choice>)}
-          </div>
+          <List>{ref.trades.map((x) => <RowButton key={x.id} icon={<TradeIcon trade={x.id} />} onClick={() => setTrade(x.id)}>{label(x)}</RowButton>)}</List>
         </>
       )}
       {step === 1 && (
         <>
           <Title sub={label(tr)}>{t("whatProblem")}</Title>
-          <div className="grid gap-2">
-            {tr!.problems.map((p) => <Choice key={p.id} className="min-h-16 text-lg" onClick={() => setProblem(p.id)}>{label(p)}</Choice>)}
-          </div>
+          <List>{tr!.problems.map((p) => <RowButton key={p.id} onClick={() => setProblem(p.id)}>{label(p)}</RowButton>)}</List>
         </>
       )}
       {step === 2 && (
         <>
-          <Title>{t("whichQuarter")}</Title>
+          <Title sub={label(tr)}>{t("whichQuarter")}</Title>
           <div className="flex flex-wrap gap-2">
             {[...ref.quarters].sort((a, b) => +(b === user?.quarter) - +(a === user?.quarter)).map((q) => (
               <Choice key={q} onClick={() => setQuarter(q)}><MapPin size={16} aria-hidden /> {q}</Choice>
@@ -68,11 +65,11 @@ function Flow() {
       {step === 3 && (
         <>
           <Title sub={`${label(tr)} · ${quarter}`}>{t("howUrgent")}</Title>
-          <div className="grid gap-2">
+          <List>
             {URGENCY.map(([u, Icon]) => (
-              <Choice key={u} disabled={busy} className="min-h-16 text-lg" onClick={() => submit(u)}><Icon size={22} aria-hidden /> {t(`urgency_${u}`)}</Choice>
+              <RowButton key={u} disabled={busy} icon={<Icon size={20} aria-hidden />} onClick={() => submit(u)}>{t(`urgency_${u}`)}</RowButton>
             ))}
-          </div>
+          </List>
         </>
       )}
       <Notice>{error}</Notice>

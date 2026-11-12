@@ -129,6 +129,22 @@ def me(user: dict = Depends(current_user)):
             "artisan": service.artisan_view(service.get_artisan(aid), full=True) if aid else None}
 
 
+class Join(BaseModel):
+    trade: str
+    quarter: str
+    name: str = ""
+
+
+@router.post("/artisans/join")
+def join(body: Join, user: dict = Depends(current_user)):
+    """Self-registration. The new artisan starts at level New and cannot be booked
+    until two people vouch for them in person through a field agent."""
+    check(user["role"] != "artisan", "You are already registered as an artisan", 409)
+    check(user["role"] == "customer", "Staff accounts cannot register as artisans", 403)
+    service.create_artisan(body.name or user["name"], user["phone"], body.trade, body.quarter, user=user)
+    return session(service.get_user(user["id"]))
+
+
 @router.post("/me/available")
 def available(body: Available, user: dict = Depends(role("artisan"))):
     service.set_available(user["artisan_id"], body.available)

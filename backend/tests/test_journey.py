@@ -137,6 +137,41 @@ def test_roles_and_otp_login():
     assert r.json()["user"]["role"] == "customer"
 
 
+def otp_login(phone, name="Self Joiner"):
+    api.post("/api/auth/otp/start", json={"phone": phone})
+    code = api.get("/api/sim/inbox", params={"phone": phone}).json()[0]["text"].split(" is ")[1][:6]
+    r = api.post("/api/auth/otp/verify", json={"phone": phone, "code": code, "name": name, "quarter": "Muea"})
+    return {"X-Session-Token": r.json()["token"]}
+
+
+def test_self_registration(customer, agent):
+    me = otp_login("+237699000200")
+    r = api.post("/api/artisans/join", headers=me, json={"trade": "mechanic", "quarter": "Muea"})
+    assert r.status_code == 200, r.text
+    user = r.json()["user"]
+    assert user["role"] == "artisan" and user["name"] == "Self Joiner"
+    me = {"X-Session-Token": r.json()["token"]}
+
+    profile = api.get("/api/me", headers=me).json()["artisan"]
+    assert profile["tier"] == 0 and profile["trade"] == "mechanic"
+    assert api.post("/api/artisans/join", headers=me, json={"trade": "tailor", "quarter": "Muea"}).status_code == 409
+
+    # not bookable until vouched
+    rid = api.post("/api/requests", headers=customer, json={
+        "trade": "mechanic", "problem": "service", "quarter": "Muea", "urgency": "week"}).json()["id"]
+    found = api.get(f"/api/requests/{rid}/matches", headers=customer).json()["matches"]
+    assert user["artisan_id"] not in [m["id"] for m in found]
+    assert api.post("/api/jobs", headers=customer, json={"request_id": rid, "artisan_id": user["artisan_id"]}).status_code == 400
+
+    # the agent sees the new artisan and can vouch for them
+    assert user["artisan_id"] in [a["id"] for a in api.get("/api/agent/artisans", headers=agent).json()]
+
+    assert api.post("/api/artisans/join", headers=agent, json={"trade": "mason", "quarter": "Muea"}).status_code == 403
+    assert api.post("/api/artisans/join", json={"trade": "mason", "quarter": "Muea"}).status_code == 401
+    bad = otp_login("+237699000201")
+    assert api.post("/api/artisans/join", headers=bad, json={"trade": "pilot", "quarter": "Muea"}).status_code == 400
+
+
 def test_ussd_menu():
     def dial(text, phone="+237670000001"):
         return api.post("/api/ussd", data={"sessionId": "s1", "phoneNumber": phone, "text": text}).text
@@ -145,6 +180,7 @@ def test_ussd_menu():
     assert "Tailor" in dial("1")
     assert "Molyko" in dial("1*1")
     assert "jobs checked" in dial("1*1*1")
+    assert "not rated yet" in dial("2*100211")  # vouched newcomer with no ratings
     assert "Ngwa Emmanuel" in dial("2*100100")
     assert dial("2*999").startswith("END No artisan")
     assert dial("4", PERSONAS["artisan"]) == "END You are now BUSY"

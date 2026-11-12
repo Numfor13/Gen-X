@@ -95,19 +95,26 @@ def get_artisan(aid: str) -> dict:
 
 
 def create_artisan(name: str, phone: str, trade: str, quarter: str, aid: str | None = None,
-                   since: int | None = None) -> dict:
+                   since: int | None = None, user: dict | None = None) -> dict:
+    """Registers an artisan. With `user`, turns that existing account into the artisan's account
+    (self-registration after a phone login); otherwise creates a new account (agent registration)."""
     name, phone = name.strip(), clean_phone(phone)
     check(name, "Name is required")
     check(trade in TRADES, "Unknown trade")
     check(quarter in QUARTERS, "Unknown quarter")
-    check(not user_by_phone(phone), "That phone number is already registered", 409)
+    existing = user_by_phone(phone)
+    check(not existing or (user and existing["id"] == user["id"]), "That phone number is already registered", 409)
     while not aid or db.get(f"ART#{aid}", "PROFILE"):
         aid = str(100000 + secrets.randbelow(900000))  # 6 digits: works on QR, USSD and by voice
     art = {"PK": f"ART#{aid}", "SK": "PROFILE", "GSI1PK": f"TRADE#{trade}", "GSI1SK": f"Q#{quarter}#ART#{aid}",
            "id": aid, "name": name, "phone": phone, "trade": trade, "quarter": quarter,
            "available": True, "since": since or now()}
     db.put(art)
-    create_user(name, phone, "artisan", quarter, aid)
+    if user:
+        db.update(user["PK"], "PROFILE", "SET #r = :r, artisan_id = :a, quarter = :q, #n = :n",
+                  {":r": "artisan", ":a": aid, ":q": quarter, ":n": name}, {"#r": "role", "#n": "name"})
+    else:
+        create_user(name, phone, "artisan", quarter, aid)
     return art
 
 
@@ -135,7 +142,8 @@ def artisan_view(art: dict, quarter: str | None = None, full: bool = False) -> d
         "available": art["available"], "since": art["since"],
         "tier": domain.tier(*counts), "next": domain.next_step(*counts),
         "verified_jobs": len(done), "up": up, "down": down,
-        "pct": None if pct is None else round(pct * 100),
+        # shown only once there are enough ratings; until then the UI says "1 of 1 satisfied"
+        "pct": None if pct is None or up + down < domain.MIN_RATED_FOR_PCT else round(pct * 100),
         "customers": len(per_customer), "repeat": sum(n > 1 for n in per_customer.values()),
         "vouch_count": len(vouches),
     }

@@ -27,7 +27,7 @@ export function Login({ only }: { only?: string[] }) {
 
   return (
     <Card className="space-y-4">
-      <h2 className="text-xl font-bold">{t("demoLogins")}</h2>
+      <h2 className="text-base font-semibold">{t("demoLogins")}</h2>
       <div className="grid grid-cols-2 gap-2">
         {PERSONAS.filter((r) => !only || only.includes(r)).map((r) => (
           <Button key={r} variant="tonal" onClick={() => persona(r)}>{t(`role_${r}` as Key)}</Button>
@@ -48,7 +48,7 @@ export function Login({ only }: { only?: string[] }) {
             if (!sent) api<{ known: boolean }>("/auth/otp/start", { phone }).then(setSent).catch((er: Error) => setError(er.message));
             else run(api<Session>("/auth/otp/verify", { phone, code, name }));
           }}>
-          <h2 className="text-xl font-bold">{t("phoneLogin")}</h2>
+          <h2 className="text-base font-semibold">{t("phoneLogin")}</h2>
           <Field label={t("phone")} type="tel" inputMode="tel" required value={phone} disabled={!!sent} onChange={(e) => setPhone(e.target.value)} />
           {sent && (
             <>

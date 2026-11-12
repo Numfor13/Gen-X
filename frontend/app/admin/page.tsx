@@ -29,7 +29,7 @@ function Console() {
           <div className="min-w-0 flex-1">
             <p className="font-bold">
               {t(`rule_${e.rule}` as Key)}{" "}
-              <span className={`ml-1 rounded-full px-2 py-0.5 text-xs ${e.severity === "high" ? "bg-error text-on-error" : "bg-primary-fixed text-on-primary-fixed"}`}>{t(`severity_${e.severity}`)}</span>
+              <span className={`ml-1 rounded-md px-2 py-0.5 text-xs font-semibold ${e.severity === "high" ? "bg-error-container text-on-error-container" : "bg-tertiary-container text-on-tertiary-container"}`}>{t(`severity_${e.severity}`)}</span>
             </p>
             <p className="text-sm">{e.details}</p>
             <p className="text-xs text-on-surface-variant">{t("subject")}: {e.subject} · {new Date(e.ts * 1000).toLocaleString(lang)}</p>

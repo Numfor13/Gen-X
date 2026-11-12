@@ -60,7 +60,7 @@ function Console() {
 
       <Card>
         <form onSubmit={register.onSubmit} className="space-y-3">
-          <h2 className="text-xl font-bold">{t("registerArtisan")}</h2>
+          <h2 className="text-base font-semibold">{t("registerArtisan")}</h2>
           <Field name="name" label={t("fullName")} required />
           <Field name="phone" label={t("phone")} type="tel" defaultValue="+237" required />
           <div className="grid grid-cols-2 gap-2">
@@ -72,11 +72,11 @@ function Console() {
         </form>
       </Card>
 
-      <h2 className="pt-2 text-xl font-bold">{t("allArtisans", { n: artisans.length })}</h2>
+      <h2 className="pt-2 text-base font-semibold">{t("allArtisans", { n: artisans.length })}</h2>
       {artisans.map((a) => (
         <Card key={a.id}>
           <div className="flex items-center gap-3">
-            <TierBadge tier={a.tier} size={44} />
+            <TierBadge tier={a.tier} size={36} />
             <div className="min-w-0 flex-1">
               <Link href={`/p/?a=${a.id}`} className="block truncate font-bold underline-offset-2 hover:underline">{a.name}</Link>
               <p className="truncate text-sm text-on-surface-variant">{label(trade(a.trade))} · {a.quarter} · ID {a.id} · {t("vouchCount", { n: a.vouch_count })}</p>

@@ -6,16 +6,11 @@
   --color-on-primary: var(--md-sys-color-on-primary);
   --color-primary-container: var(--md-sys-color-primary-container);
   --color-on-primary-container: var(--md-sys-color-on-primary-container);
-  --color-primary-fixed: var(--md-sys-color-primary-fixed);
-  --color-on-primary-fixed: var(--md-sys-color-on-primary-fixed);
-  --color-secondary: var(--md-sys-color-secondary);
-  --color-on-secondary: var(--md-sys-color-on-secondary);
-  --color-secondary-fixed: var(--md-sys-color-secondary-fixed);
-  --color-on-secondary-fixed: var(--md-sys-color-on-secondary-fixed);
+  --color-secondary-container: var(--md-sys-color-secondary-container);
+  --color-on-secondary-container: var(--md-sys-color-on-secondary-container);
   --color-tertiary: var(--md-sys-color-tertiary);
-  --color-on-tertiary: var(--md-sys-color-on-tertiary);
-  --color-tertiary-fixed: var(--md-sys-color-tertiary-fixed);
-  --color-on-tertiary-fixed: var(--md-sys-color-on-tertiary-fixed);
+  --color-tertiary-container: var(--md-sys-color-tertiary-container);
+  --color-on-tertiary-container: var(--md-sys-color-on-tertiary-container);
   --color-surface: var(--md-sys-color-surface);
   --color-surface-lowest: var(--md-sys-color-surface-container-lowest);
   --color-surface-low: var(--md-sys-color-surface-container-low);
@@ -42,8 +37,8 @@ body {
 
 /* In the components layer so a rounded-* utility can still override the default radius. */
 @layer components {
-/* Expressive press: pill corners spring toward a squarer shape. Radius is half the min height,
-   not 9999px, so the morph interpolates over a visible range. */
+/* Expressive press, used on buttons only: pill corners spring toward a squarer shape.
+   Radius is half the height, not 9999px, so the morph interpolates over a visible range. */
 .press {
   border-radius: 28px;
   transition:
@@ -53,7 +48,6 @@ body {
 }
 .press:active:not(:disabled) {
   border-radius: 12px;
-  transform: scale(0.97);
 }
 
 /* Code digits pop in one by one */

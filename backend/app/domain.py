@@ -5,6 +5,7 @@ TIER_JOBS_VERIFIED = 3
 TIER_JOBS_PRO = 10
 TIER_PCT_PRO = 0.8
 REVEAL_AFTER_S = 72 * 3600
+MIN_RATED_FOR_PCT = 5  # below this a percentage misleads: 1 thumbs-up out of 1 would read as 38%
 
 
 def wilson_lb(up: int, down: int, z: float = 1.28) -> float | None:
